@@ -1,0 +1,100 @@
+username connect/as sysdba
+Есть 4 вида sql запросов
+	DDL - Data definition language. Создание базы и ее структуры
+	DML - Data manipulation language. Добавление изменение данных в базе его обновление и вывод. Манипуляция данными
+	DCL - Data control language. Запросы и команды, касающиеся разрешения прав и настроек
+	TCL - Transaction control language. Для управления изменениями касающиеся DML запросов
+
+Oracle
+
+1. Создание нового пользователя
+	CREATE tablespace tbs_01
+	datafile 'tbs_01.dbf'
+	size 30M;	
+
+	CREATE temporary tablespace tbs_02
+	tempfile 'tbs_02.dbf'
+	size 100m;
+	
+	CREATE user test				outside user
+  	identified by 2012
+  	default tablespace tbs_01
+  	temporary tablespace tbs_02
+  	quota 50M on tbs_01;
+
+	
+2. Назначение привелегии system новому пользователю
+	grant all privileges to test;
+	
+	select * from session_privs;
+
+3. Cоздание таблиц
+	CREATE table Employee (
+	id number not null,
+	name varchar(20),
+	contract char default 'n' not null,
+	contraint p_Id primary key(id),
+	contraint c_contract check(contract IN('y','n')));
+
+4. Создание представлении
+	create or replace view test_view as  
+	select * from session_privs;
+	-------
+	select * from test_view
+
+PL/SQL - язык процедур/ язык структурированных запросов
+Базовый блок pl/sql состоит из трех частей
+	-------
+	DECLARE 
+		<declarations section>
+		Объявление переменных, курсоры, подпрограммы
+	BEGIN
+		<executable commands>;
+		исполняемые команды
+		хотя бы одна команда должна быть
+	END;
+	EXCEPTION
+		<exception handling>
+		обработка исключии 
+
+
+	insert into employee(id,name) values(1,'test');
+	-------
+	set serveroutput on
+	-------
+	declare
+    		emp employee.name%type;
+    	begin
+    		select name
+    		into emp
+    		from employee
+    		where RowNum = 1;
+    		dbms_output.put_line(emp);
+	end;
+ 	/
+	-------
+	CREATE or REPLACE procedure grees
+    	is
+    	emp employee.name%type;
+    	begin
+    	select name
+    	into emp
+    	from employee
+    	where RowNum = 1;
+    	dbms_output.put_line(emp);
+	end;
+ 	/
+	-------
+	CREATE or REPLACE function green
+	(id IN number)
+	return varchar
+    	is
+	
+    	emp employee.name%type;
+    	begin
+    	select name
+    	into emp
+    	from employee
+    	where id = id;
+    	return emp;
+	end;
